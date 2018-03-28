@@ -1,13 +1,13 @@
-import create, { Created } from '../create'
+import create, { Matcher } from '../create'
 
-interface Captor {
-  capture: Created
-  values: any[]
-  value: any
+export interface Captor<T> {
+  capture(): T
+  value?: T
+  values?: T[]
 }
 
-export default () => {
-  const captor: Captor = {
+export default <T>() => {
+  const captor: Captor<T> = {
     capture: create({
       name: 'captor.capture',
       matches (matcherArgs, actual) {

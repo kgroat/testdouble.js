@@ -2,6 +2,10 @@ import CallLog from '../value/call-log'
 import Call from '../value/call'
 import satisfy from '../satisfy'
 
+export interface FakeFunctionType {
+  
+}
+
 export default function generateFakeFunction (double) {
   const testDouble = function testDouble (...args) {
     const call = new Call(this, args)

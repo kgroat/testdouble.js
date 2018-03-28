@@ -1,6 +1,9 @@
+
+import Stubbing from '../value/Stubbing'
+
 import createPromise from '../share/create-promise'
 
-export default function deliverOutcome (stubbing, call) {
+export default function deliverOutcome (stubbing: Stubbing, call) {
   switch (stubbing.type) {
     case 'thenReturn': return stubbing.currentOutcome
     case 'thenDo': return stubbing.currentOutcome.apply(call.context, call.args)

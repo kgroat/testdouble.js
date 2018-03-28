@@ -1,19 +1,19 @@
 import _ from '../wrap/lodash'
 
-export default class Double {
+export default class Double<T> {
   fake?: any
-  name?: any
-  real?: any
+  name?: string
+  real?: T
   children?: Set<any>
   parent?: any
 
-  static create (name, real, parent, fakeCreator) {
+  static create<T> (name: string, real: T, parent: any, fakeCreator?: (double: Double<T>) => ) {
     const double = new Double(name, real, parent)
     if (fakeCreator) double.fake = fakeCreator(double)
     return double
   }
 
-  constructor (name, real, parent) {
+  constructor (name: string, real: T, parent: any) {
     this.name = name
     this.real = real
     this.children = new Set()

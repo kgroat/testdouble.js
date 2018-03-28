@@ -6,6 +6,7 @@ export default class Stubbing {
   outcomes: any
   options: any
   satisfyingCalls: Set<any>
+  config?: any
 
   constructor (type, args, outcomes, options = {}) {
     this.type = type

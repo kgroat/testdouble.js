@@ -1,25 +1,30 @@
 import _ from '../wrap/lodash'
 import stringifyArguments from '../stringify/arguments'
 
-export interface Created {
-  (...matcherArgs): any
+export type Matcher<T> = (...args) => T
+
+interface PrivateMatcher<T> extends Matcher<T> {
   __name?: string
-  __matches?: string
+  __matches?: {
+    (...args): any
+    afterSatisfaction?: (arg?) => any
+  }
 }
 
-export default (config): Created =>
-  (...matcherArgs) =>
+export default <T>(config): Matcher<T> =>
+  (...matcherArgs) => {
     _.tap({
       __name: nameFor(config, matcherArgs),
       __matches (actualArg) {
         return config.matches(matcherArgs, actualArg)
       }
-    }, (matcherInstance) => {
+    } as PrivateMatcher<T>, (matcherInstance) => {
       matcherInstance.__matches.afterSatisfaction = (actualArg) => {
         _.invoke(config, 'afterSatisfaction', matcherArgs, actualArg)
       }
       _.invoke(config, 'onCreate', matcherInstance, matcherArgs)
     })
+  }
 
 var nameFor = (config, matcherArgs) => {
   if (_.isFunction(config.name)) {

@@ -1,3 +1,4 @@
+import { Dictionary } from 'lodash'
 import _ from './wrap/lodash'
 import log from './log'
 import tdFunction from './function'
@@ -11,7 +12,7 @@ export default function object (nameOrType, config) {
   })
 }
 
-var fakeObject = function (nameOrType, config, argCount) {
+var fakeObject = function <T>(nameOrType: T | (keyof T)[], config, argCount) {
   if (_.isArray(nameOrType)) {
     return createTestDoublesForFunctionNames(nameOrType)
   } else if (_.isObjectLike(nameOrType)) {
@@ -25,8 +26,8 @@ var fakeObject = function (nameOrType, config, argCount) {
   }
 }
 
-var createTestDoublesForFunctionNames = (names) =>
-  _.transform(names, (acc, funcName) => {
+var createTestDoublesForFunctionNames = <T>(names: (keyof T)[]) => 
+  _.transform(names, (acc: any, funcName) => {
     acc[funcName] = tdFunction(`.${String(funcName)}`)
   })
 

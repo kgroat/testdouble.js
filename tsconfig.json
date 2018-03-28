@@ -5,7 +5,11 @@
     "noImplicitAny": false,
     "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": "lib"
+    "outDir": "lib",
+    "baseUrl": "./src",
+    "paths": {
+      "types/*": ["types/*"]
+    }
   },
   "include": ["src/**/*"]
 }

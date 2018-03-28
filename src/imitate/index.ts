@@ -3,8 +3,10 @@ import * as Map from 'es6-map'
 import initializeNames from './initialize-names'
 import createImitation from './create-imitation'
 import overwriteChildren from './overwrite-children'
+import { Function0 } from 'lodash';
 
-export default function imitate (original, names?, encounteredObjects = new Map()) {
+
+const imitate = <T>(original: T, names?, encounteredObjects = new Map()): T => {
   if (encounteredObjects.has(original)) return encounteredObjects.get(original)
   names = initializeNames(original, names)
   const target = createImitation(original, names)
@@ -14,3 +16,5 @@ export default function imitate (original, names?, encounteredObjects = new Map(
   )
   return target
 }
+
+export default imitate
