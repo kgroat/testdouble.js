@@ -5,19 +5,31 @@ import imitate from './imitate'
 
 const DEFAULT_OPTIONS = {excludeMethods: ['then']}
 
-export default function object (nameOrType, config) {
+export interface ObjectProxyConfig {
+  excludeMethods: string[]
+}
+
+export interface ObjectType {
+  <T>(original: T): T
+  <T>(names: (keyof T)[]): T
+  (names: string, config?: ObjectProxyConfig): any
+}
+
+type a = ProxyConstructor
+
+const object: ObjectType = function <T>(nameOrType: T | (keyof T)[] | string, config?: ObjectProxyConfig): T {
   return _.tap(fakeObject(nameOrType, config, arguments.length), (obj) => {
     addToStringToDouble(obj, nameOrType)
   })
 }
 
-var fakeObject = function (nameOrType, config, argCount) {
+var fakeObject = function <T>(nameOrType: T | (keyof T)[] | string, config, argCount: number): T {
   if (_.isArray(nameOrType)) {
     return createTestDoublesForFunctionNames(nameOrType)
-  } else if (_.isObjectLike(nameOrType)) {
-    return imitate(nameOrType)
   } else if (_.isString(nameOrType) || argCount === 0) {
     return createTestDoubleViaProxy(nameOrType, withDefaults(config))
+  } else if (_.isObjectLike(nameOrType)) {
+    return imitate(nameOrType)
   } else if (_.isFunction(nameOrType)) {
     ensureFunctionIsNotPassed()
   } else {
@@ -25,15 +37,15 @@ var fakeObject = function (nameOrType, config, argCount) {
   }
 }
 
-var createTestDoublesForFunctionNames = (names) =>
-  _.transform(names, (acc, funcName) => {
+var createTestDoublesForFunctionNames = <T>(names: (keyof T)[]): T => 
+  _.transform<keyof T, keyof T>(names, (acc: any, funcName) => {
     acc[funcName] = tdFunction(`.${String(funcName)}`)
-  })
+  }, {}) as { [P in keyof T] }
 
-var createTestDoubleViaProxy = (name, config) => {
+var createTestDoubleViaProxy = <T>(name, config): T => {
   ensureProxySupport(name)
-  const obj = {}
-  return new Proxy(obj, {
+  const obj = {} as T & object
+  return new Proxy<T & object>(obj, {
     get (target, propKey, receiver) {
       if (!obj.hasOwnProperty(propKey) && !_.includes(config.excludeMethods, propKey)) {
         obj[propKey] = tdFunction(`${nameOf(name)}.${String(propKey)}`)
@@ -82,3 +94,5 @@ var nameOf = (nameOrType) =>
   _.isString(nameOrType)
     ? nameOrType
     : ''
+
+export default object
